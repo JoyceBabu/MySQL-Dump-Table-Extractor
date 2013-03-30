@@ -46,7 +46,7 @@ check_dump_file(){
 generate_table_list(){
 	local DUMP_FILE=$1
 	echo "Generating list of tables in $DUMP_FILE"
-	i=0
+	local i=0
 	for table in `grep 'Table structure' "$DUMP_FILE" | cut -d'\`' -f2`; do
 		TABLE_LIST[$i]=$table
 		i=$(($i+1))
@@ -65,6 +65,11 @@ extract(){
 	local DUMP_FILE=$1
 	local INPUT1=$2
 	local INPUT2=$3
+	local i
+	local index1
+	local index2
+	local tmp
+	local count
 
 	# Check whether input is numeric
 	expr $INPUT1 + 1 2> /dev/null
@@ -195,6 +200,13 @@ while [ 1 ]; do
 		for ((i=1; i <= TABLE_COUNT ; i++)); do
 		  echo "$i. ${TABLE_LIST[i-1]}"
 		done
+	elif [ $INPUT = "EXTRACT" ]; then
+		echo $INPUT
+		echo $TABLE_COUNT
+		for ((i=1; i <= TABLE_COUNT ; i++)); do
+		  	echo "Extracting ${TABLE_LIST[i-1]}"
+			extract $DUMP_FILE ${TABLE_LIST[i-1]}
+		done
 	else
 		extract $DUMP_FILE $INPUT $INPUT2
 	fi
@@ -203,6 +215,7 @@ while [ 1 ]; do
 	echo "| Usage:                                                                     |"
 	echo "|     tablename              [ Extracts single table by tablename or index ] |"
 	echo "|     tablename1 tablename2  [ Extracts all tables from table1 table2      ] |"
+	echo "|     EXTRACT                [ Extract all tables into individual files    ] |"
 	echo "|     LIST                   [ List all tables                             ] |"
 	echo "|     QUIT                   [ Exit from script                            ] |"
 	echo "=============================================================================="
