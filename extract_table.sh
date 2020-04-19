@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # MySQL Dumpfile Table Extractor v1.0
-#  
+#
 # This script can be used to extract tables from a MySQL dumpfile
 #
 # Copyright 2010, Joyce Babu ( http://www.joycebabu.com/ )
@@ -80,7 +80,7 @@ extract(){
 		# Tablename is specified. Search for index.
 		for index1 in "${!TABLE_LIST[@]}" ""; do [[ ${TABLE_LIST[index1]} = $INPUT1 ]] && break; done
 	fi
-	
+
 	# Input 2
 	if [ ! -z $INPUT2 ]; then
 		# Check whether input is numeric
@@ -92,11 +92,11 @@ extract(){
 			# Tablename is specified. Search for index.
 			for index2 in "${!TABLE_LIST[@]}" ""; do [[ ${TABLE_LIST[index2]} = $INPUT2 ]] && break; done
 		fi
-	else 
+	else
 		# not specified. use INPUT1
 		index2=$index1
 	fi
-	
+
 	if [ -z $index1 ]; then
 		echo "[ERROR] Invalid input '$INPUT1'. Not a valid table or index."
 	elif [ -z $index2 ]; then
@@ -110,13 +110,13 @@ extract(){
 		fi
 
 		TABLE1=${TABLE_LIST[index1]}
-		BEGIN_PATTERN="/-- Table structure for table .$TABLE1./"
+		BEGIN_PATTERN="/-- Table structure for table \`$TABLE1\`/"
 		# Increment index2 to find the next tablename
 		index2=$(($index2+1))
 		count=$(($index2-$index1))
 		if [ $index2 -lt $TABLE_COUNT ]; then
 			TABLE2=${TABLE_LIST[index2]}
-			END_PATTERN="/-- Table structure for table .$TABLE2./"
+			END_PATTERN="/-- Table structure for table \`$TABLE2\`/"
 		else
 			END_PATTERN='$'
 		fi
@@ -128,7 +128,7 @@ extract(){
 			i=$(($i+1))
 		done
 		# Extract the tables
-		
+
 		sed -ne "${BEGIN_PATTERN},${END_PATTERN}p" $DUMP_FILE > $OUTPUT_FILE
 
 		if [ -s $OUTPUT_FILE ]; then
